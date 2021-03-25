@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         allproducts.add(DataChecker.get_instance().check_product_data("Сникерс", 0, 50, 80));
         allproducts.add(DataChecker.get_instance().check_product_data("Принглс", 0, 150, 100));
         for (Automate i: automates) {
-            for(int j = (random.nextInt()%6+6)%6; j>0; j--){
+            for(int j = (random.nextInt()%6+6)%6+20; j>0; j--){
                 int a = (random.nextInt() % 3 + 3) % 3;
                 System.out.println(a);
                 System.out.println(allproducts.get(a).get_name());

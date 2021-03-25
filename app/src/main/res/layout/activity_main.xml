@@ -6,15 +6,17 @@
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:padding="16dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1"
-            android:id="@+id/automate1">
+            android:id="@+id/automate1"
+            android:padding="16dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,7 +37,7 @@
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="500dp"
                 android:layout_weight="2"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             <LinearLayout
@@ -58,7 +60,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1"
-            android:id="@+id/automate2">
+            android:id="@+id/automate2"
+            android:padding="16dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -77,11 +80,12 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
             </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="500dp"
                 android:layout_weight="2"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -100,15 +104,17 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="16dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1"
-            android:id="@+id/automate3">
+            android:id="@+id/automate3"
+            android:padding="16dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -129,7 +135,7 @@
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="500dp"
                 android:layout_weight="2"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             <LinearLayout
@@ -152,7 +158,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1"
-            android:id="@+id/automate4">
+            android:id="@+id/automate4"
+            android:padding="16dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -173,9 +180,9 @@
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="500dp"
                 android:layout_weight="2"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
