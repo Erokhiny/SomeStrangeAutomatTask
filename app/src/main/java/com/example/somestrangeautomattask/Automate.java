@@ -1,12 +1,10 @@
 package com.example.somestrangeautomattask;
 
 import android.os.AsyncTask;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.os.Handler;
+import android.os.Message;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -15,10 +13,12 @@ public class Automate {
     ArrayList<IProduct> products;
     String status, name;
     ArrayList<Student> students;
-    LinearLayout automateView;
+    AutomateFragment automateView;
     MainActivity context;
     Automate instance;
-    Automate(String status, String name, LinearLayout automateView, MainActivity context){
+    Handler handler;
+
+    Automate(String status, String name, AutomateFragment automateView, MainActivity context){
         this.name = name;
         this.status = status;
         this.automateView = automateView;
@@ -26,6 +26,13 @@ public class Automate {
         products = new ArrayList<IProduct>();
         students = new ArrayList<Student>();
         instance = this;
+        handler = new Handler() {   // создание хэндлера
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                automateView.updateAutomateData(instance);
+            }
+        };
     }
 
     public int get_length_of_queue(){
@@ -45,191 +52,99 @@ public class Automate {
     }
 
     public void execute(){
-        Idle next = new Idle();
-        next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Thread thread=new Thread(new IdleRunnable());
+        thread.start();
+//        Idle next = new Idle();
+//        next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    class Idle extends AsyncTask<Void, Void, Void> {
-
+    class IdleRunnable implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ((TextView)automateView.getChildAt(0)).setText(name);
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(0)).setText("Простаивает");
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(1)).setText("");
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(0)).setText(((Integer)students.size()).toString());
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(1)).setText("");
-            RecyclerView recyclerView = (RecyclerView) automateView.getChildAt(2);
-            ProductAdapter adapter = new ProductAdapter(context, new ArrayList<IProduct>());
-            recyclerView.setAdapter(adapter);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
+            status = "Простаивает";
+            handler.sendEmptyMessage(1);
             try {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(2+(int)(Math.random()*3));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            if(students.size()!=0){
-                Oredering next = new Oredering();
-                next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if(students.size()!=0) {
+                Thread thread = new Thread(new OrderingRunnable());
+                thread.start();
             }
         }
     }
-    class Oredering extends AsyncTask<Void, Void, Void> {
 
+    class OrderingRunnable implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ((TextView)automateView.getChildAt(0)).setText(name);
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(0)).setText("Приём заказа");
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(1)).setText("ID студента: " + students.get(0).id);
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(0)).setText(((Integer)students.size()).toString());
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(1)).setText("Расчитывается");
+        public void run() {
+            status = "Приём заказа";
+            handler.sendEmptyMessage(1);
+            try {
+                TimeUnit.SECONDS.sleep(3+(int)(Math.random()*3));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             students.get(0).choose_your_destiny(instance);
-            RecyclerView recyclerView = (RecyclerView) automateView.getChildAt(2);
-            ProductAdapter adapter = new ProductAdapter(context, students.get(0).wished_products);
-            recyclerView.setAdapter(adapter);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
             if(students.get(0).cash>=students.get(0).get_sum_of_order()){
-                Paying next = new Paying();
-                next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                Thread thread = new Thread(new PayingRunnable());
+                thread.start();
             }
             else{
-                Canceling next = new Canceling();
-                next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                Thread thread = new Thread(new CancelingRunnable());
+                thread.start();
             }
         }
     }
 
-    class Paying extends AsyncTask<Void, Void, Void> {
-
+    class PayingRunnable implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ((TextView)automateView.getChildAt(0)).setText(name);
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(0)).setText("Оплата заказа");
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(1)).setText("ID студента: " + students.get(0).id);
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(0)).setText(((Integer)students.size()).toString());
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(1)).setText(((Integer)students.get(0).get_sum_of_order()).toString());
-            RecyclerView recyclerView = (RecyclerView) automateView.getChildAt(2);
-            ProductAdapter adapter = new ProductAdapter(context, students.get(0).wished_products);
-            recyclerView.setAdapter(adapter);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
+            status = "Оплата заказа";
+            handler.sendEmptyMessage(1);
             try {
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(3+(int)(Math.random()*3));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
             students.get(0).cash-=students.get(0).get_sum_of_order();
-            Giving next = new Giving();
-            next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            Thread thread = new Thread(new GivingRunnable());
+            thread.start();
         }
     }
 
-    class Canceling extends AsyncTask<Void, Void, Void> {
-
+    class CancelingRunnable implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ((TextView)automateView.getChildAt(0)).setText(name);
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(0)).setText("Отмена заказа");
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(1)).setText("ID студента: " + students.get(0).id);
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(0)).setText(((Integer)students.size()).toString());
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(1)).setText(((Integer)students.get(0).get_sum_of_order()).toString());
-            RecyclerView recyclerView = (RecyclerView) automateView.getChildAt(2);
-            ProductAdapter adapter = new ProductAdapter(context, students.get(0).wished_products);
-            recyclerView.setAdapter(adapter);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
+            status = "Отмена заказа";
+            handler.sendEmptyMessage(1);
             try {
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(3+(int)(Math.random()*3));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
             students.remove(0);
-            Idle next = new Idle();
-            next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            Thread thread = new Thread(new IdleRunnable());
+            thread.start();
         }
     }
 
-    class Giving extends AsyncTask<Void, Void, Void> {
-
+    class GivingRunnable implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ((TextView)automateView.getChildAt(0)).setText(name);
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(0)).setText("Выдача заказа");
-            ((TextView)((LinearLayout)automateView.getChildAt(1)).getChildAt(1)).setText("ID студента: " + students.get(0).id);
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(0)).setText(((Integer)students.size()).toString());
-            ((TextView)((LinearLayout)automateView.getChildAt(3)).getChildAt(1)).setText(((Integer)students.get(0).get_sum_of_order()).toString());
-            RecyclerView recyclerView = (RecyclerView) automateView.getChildAt(2);
-            ProductAdapter adapter = new ProductAdapter(context, students.get(0).wished_products);
-            recyclerView.setAdapter(adapter);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
+            status = "Выдача заказа";
+            handler.sendEmptyMessage(1);
             try {
-                TimeUnit.SECONDS.sleep(4);
+                TimeUnit.SECONDS.sleep(4+(int)(Math.random()*3));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            for (IProduct i: students.get(0).wished_products) {
+            for (IProduct i : students.get(0).wished_products) {
                 products.remove(i);
             }
             students.remove(0);
-            Idle next = new Idle();
-            next.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            Thread thread = new Thread(new IdleRunnable());
+            thread.start();
         }
     }
 }

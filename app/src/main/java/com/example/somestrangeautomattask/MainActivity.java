@@ -33,12 +33,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void update_Automate_data(List<Automate> automates){
-        automates.add(new Automate("Простаивает", "Первый Автомат", (LinearLayout)findViewById(R.id.automate1), this));
-        automates.add(new Automate("Простаивает", "Второй Автомат", (LinearLayout)findViewById(R.id.automate2), this));
-        automates.add(new Automate("Простаивает", "Третий Автомат", (LinearLayout)findViewById(R.id.automate3), this));
-        automates.add(new Automate("Простаивает", "Четвёртый Автомат", (LinearLayout)findViewById(R.id.automate4), this));
+        automates.add(new Automate("Простаивает", "Первый Автомат", (AutomateFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.automate1), this));
+        automates.add(new Automate("Простаивает", "Второй Автомат", (AutomateFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.automate2), this));
+        automates.add(new Automate("Простаивает", "Третий Автомат", (AutomateFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.automate3), this));
+        automates.add(new Automate("Простаивает", "Четвёртый Автомат", (AutomateFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.automate4), this));
         for (Automate i: automates) {
-            RecyclerView recyclerView = (RecyclerView) i.automateView.getChildAt(2);
+            RecyclerView recyclerView = (RecyclerView) ((LinearLayout)i.automateView.getView()).getChildAt(2);
             ProductAdapter adapter = new ProductAdapter(this, new ArrayList<IProduct>());
             recyclerView.setAdapter(adapter);
         }
